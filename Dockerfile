@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+FROM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu22.04 
 
 USER root
 

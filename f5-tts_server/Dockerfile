@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
 
 USER root
 
@@ -12,13 +12,24 @@ RUN set -x \
     && apt-get install -y openssh-server sox libsox-fmt-all libsox-fmt-mp3 libsndfile1-dev ffmpeg \
     && apt-get install -y librdmacm1 libibumad3 librdmacm-dev libibverbs1 libibverbs-dev ibverbs-utils ibverbs-providers \
     && apt-get install -y libmagic1 \
+    && apt-get install -y python3 python3-pip \
+    && python3 -m pip install --upgrade pip \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
     
 WORKDIR /workspace
 
-RUN git clone https://github.com/SWivid/F5-TTS.git \
-    && cd F5-TTS \
+
+# Install PyTorch and other common deep learning libraries compatible with CUDA 12.8
+# This is crucial for F5-TTS
+RUN pip3 install --no-cache-dir \
+    torch \
+    torchvision \
+    torchaudio \
+    --index-url https://download.pytorch.org/whl/cu128
+
+RUN git clone https://github.com/ValyrianTech/F5-TTS_server.git \
+    && cd F5-TTS_server \
     && git submodule update --init --recursive \
     && pip install -e . --no-cache-dir
 
